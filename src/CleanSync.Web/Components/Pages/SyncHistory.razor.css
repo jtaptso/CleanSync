@@ -1,0 +1,111 @@
+.sync-history-page {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.page-header .header-info h3 {
+    color: white;
+    font-size: 1.3rem;
+    margin-bottom: 4px;
+}
+
+.page-header .header-info p {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.history-table {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.table-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    padding: 16px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: white;
+    font-size: 0.95rem;
+    transition: background 0.2s ease;
+}
+
+.table-row:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.table-row:last-child {
+    border-bottom: none;
+}
+
+.table-row .date {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.table-row .type, .table-row .direction {
+    text-transform: capitalize;
+}
+
+.table-row .success {
+    color: #2ed573;
+}
+
+.table-row .failed {
+    color: #ff4757;
+}
+
+.table-row .status {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.table-row .status.success {
+    background: rgba(46, 213, 115, 0.2);
+    color: #2ed573;
+}
+
+.table-row .status.error {
+    background: rgba(255, 71, 87, 0.2);
+    color: #ff4757;
+}
+
+.table-row .status.pending {
+    background: rgba(255, 193, 7, 0.2);
+    color: #ffc107;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.empty-state .icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 16px;
+}
+
+.empty-state h3 {
+    color: white;
+    margin-bottom: 8px;
+}

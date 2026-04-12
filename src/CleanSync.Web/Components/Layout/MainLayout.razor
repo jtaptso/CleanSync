@@ -1,0 +1,53 @@
+@inherits LayoutComponentBase
+
+<div class="page">
+    <div class="sidebar">
+        <div class="logo-section">
+            <h3>CleanSync</h3>
+            <span class="badge badge-demo">Demo Mode</span>
+        </div>
+        <nav class="nav-menu">
+            <a href="/" class="nav-item active">
+                <span class="icon">&#128200;</span>
+                Dashboard
+            </a>
+            <a href="/partners" class="nav-item">
+                <span class="icon">&#128101;</span>
+                Business Partners
+            </a>
+            <a href="/sync" class="nav-item">
+                <span class="icon">&#128259;</span>
+                Sync History
+            </a>
+            <a href="/settings" class="nav-item">
+                <span class="icon">&#9881;</span>
+                Settings
+            </a>
+        </nav>
+        <div class="connection-status">
+            <div class="status-item">
+                <span class="status-dot connected"></span>
+                <span>SAP B1 Connected</span>
+            </div>
+            <div class="status-item">
+                <span class="status-dot connected"></span>
+                <span>E-commerce Connected</span>
+            </div>
+        </div>
+    </div>
+    <main>
+        <div class="top-row">
+            <h2>@Title</h2>
+            <div class="user-info">
+                <span>Admin</span>
+            </div>
+        </div>
+        <div class="content">
+            @Body
+        </div>
+    </main>
+</div>
+
+@code {
+    private string Title = "Dashboard";
+}

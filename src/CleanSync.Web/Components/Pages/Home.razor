@@ -1,0 +1,221 @@
+@page "/"
+@inject HttpClient Http
+
+<div class="dashboard">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                <span>&#128101;</span>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value">@partnersCount</span>
+                <span class="stat-label">Business Partners</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                <span>&#128259;</span>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value">@syncCount</span>
+                <span class="stat-label">Total Syncs</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                <span>&#9989;</span>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value">@successRate%</span>
+                <span class="stat-label">Success Rate</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
+                <span>&#128338;</span>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value">@lastSyncTime</span>
+                <span class="stat-label">Last Sync</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-section">
+        <div class="sync-card">
+            <h3>Sync Business Partners</h3>
+            <p>Sync customers from Shopify/Amazon to SAP B1</p>
+            <button class="btn-sync" @onclick="SyncPartners" disabled="@isSyncing">
+                @if (isSyncing)
+                {
+                    <span class="spinner"></span>
+                    @("Syncing...")
+                }
+                else
+                {
+                    <span>&#128259;</span>
+                    @("Start Sync")
+                }
+            </button>
+            @if (!string.IsNullOrEmpty(syncMessage))
+            {
+                <div class="sync-message @syncMessageType">
+                    @syncMessage
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="recent-activity">
+        <h3>Recent Sync Activity</h3>
+        <div class="activity-list">
+            @if (syncLogs.Any())
+            {
+                @foreach (var log in syncLogs)
+                {
+                    <div class="activity-item">
+                        <div class="activity-icon @GetStatusClass(log.Status)">
+                            @if (log.Status == "Synced")
+                            {
+                                <span>&#9989;</span>
+                            }
+                            else if (log.Status == "Failed")
+                            {
+                                <span>&#10060;</span>
+                            }
+                            else
+                            {
+                                <span>&#128259;</span>
+                            }
+                        </div>
+                        <div class="activity-details">
+                            <span class="activity-title">@log.EntityType Sync - @log.Direction</span>
+                            <span class="activity-time">@log.StartedAt.ToString("g")</span>
+                        </div>
+                        <div class="activity-stats">
+                            <span class="success">@log.SuccessCount success</span>
+                            @if (log.FailureCount > 0)
+                            {
+                                <span class="failed">@log.FailureCount failed</span>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="no-activity">No sync activity yet. Click "Start Sync" to begin.</div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private int partnersCount = 0;
+    private int syncCount = 0;
+    private string successRate = "100";
+    private string lastSyncTime = "Never";
+    private bool isSyncing = false;
+    private string syncMessage = "";
+    private string syncMessageType = "";
+    private List<SyncLogDto> syncLogs = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            var partners = await Http.GetFromJsonAsync<List<BusinessPartnerDto>>("api/businesspartners");
+            partnersCount = partners?.Count ?? 0;
+
+            var logs = await Http.GetFromJsonAsync<List<SyncLogDto>>("api/businesspartners/sync-logs");
+            syncLogs = logs?.OrderByDescending(l => l.StartedAt).Take(5).ToList() ?? new();
+            syncCount = logs?.Count ?? 0;
+
+            if (syncLogs.Any())
+            {
+                var lastSync = syncLogs.First();
+                lastSyncTime = lastSync.StartedAt.ToString("HH:mm");
+                var total = lastSync.SuccessCount + lastSync.FailureCount;
+                successRate = total > 0 ? Math.Round((double)lastSync.SuccessCount / total * 100).ToString() : "100";
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading data: {ex.Message}");
+        }
+    }
+
+    private async Task SyncPartners()
+    {
+        isSyncing = true;
+        syncMessage = "";
+
+        try
+        {
+            var result = await Http.PostAsync("api/sync/business-partners", null);
+            var response = await result.Content.ReadFromJsonAsync<SyncResultDto>();
+            
+            if (response != null)
+            {
+                syncMessage = response.Message;
+                syncMessageType = response.Success ? "success" : "error";
+                await LoadData();
+            }
+        }
+        catch (Exception ex)
+        {
+            syncMessage = $"Error: {ex.Message}";
+            syncMessageType = "error";
+        }
+        finally
+        {
+            isSyncing = false;
+        }
+    }
+
+    private string GetStatusClass(string status)
+    {
+        return status?.ToLower() switch
+        {
+            "synced" => "success",
+            "failed" => "error",
+            "inprogress" => "pending",
+            _ => ""
+        };
+    }
+
+    public class BusinessPartnerDto
+    {
+        public int Id { get; set; }
+        public string CardCode { get; set; } = "";
+        public string CardName { get; set; } = "";
+        public string? Email { get; set; }
+        public string Source { get; set; } = "";
+        public string SyncStatus { get; set; } = "";
+    }
+
+    public class SyncLogDto
+    {
+        public int Id { get; set; }
+        public string EntityType { get; set; } = "";
+        public string Direction { get; set; } = "";
+        public int SuccessCount { get; set; }
+        public int FailureCount { get; set; }
+        public DateTime StartedAt { get; set; }
+        public string Status { get; set; } = "";
+    }
+
+    public class SyncResultDto
+    {
+        public bool Success { get; set; }
+        public int TotalProcessed { get; set; }
+        public int SuccessCount { get; set; }
+        public int FailureCount { get; set; }
+        public string Message { get; set; } = "";
+    }
+}

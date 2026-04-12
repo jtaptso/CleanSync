@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CleanSync.Api/CleanSync.Api.csproj" />
+    <Project Path="src/CleanSync.Application/CleanSync.Application.csproj" />
+    <Project Path="src/CleanSync.Domain/CleanSync.Domain.csproj" />
+    <Project Path="src/CleanSync.Infrastructure/CleanSync.Infrastructure.csproj" />
+    <Project Path="src/CleanSync.Web/CleanSync.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CleanSync.Tests/CleanSync.Tests.csproj" />
+  </Folder>
+</Solution>

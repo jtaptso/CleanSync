@@ -1,0 +1,239 @@
+@page "/settings"
+
+<div class="settings-page">
+    <div class="page-header">
+        <h3>Settings</h3>
+        <p>Configure your connections and sync preferences</p>
+    </div>
+
+    <div class="settings-grid">
+        <div class="settings-card">
+            <div class="card-header">
+                <span class="icon">&#128187;</span>
+                <h4>SAP B1 Connection</h4>
+            </div>
+            <div class="card-content">
+                <div class="form-group">
+                    <label>Service Layer URL</label>
+                    <input type="text" value="https://your-sap-server:50000/b1s/v1" disabled />
+                    <span class="hint">Configure in appsettings.json</span>
+                </div>
+                <div class="connection-status">
+                    <span class="status-dot connected"></span>
+                    <span>Connected (Demo Mode)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-card">
+            <div class="card-header">
+                <span class="icon">&#128722;</span>
+                <h4>E-commerce Platform</h4>
+            </div>
+            <div class="card-content">
+                <div class="platforms">
+                    <div class="platform-item">
+                        <span class="platform-name">&#128722; Shopify</span>
+                        <span class="status connected">Connected</span>
+                    </div>
+                    <div class="platform-item">
+                        <span class="platform-name">&#128230; Amazon</span>
+                        <span class="status connected">Connected</span>
+                    </div>
+                </div>
+                <span class="hint">Demo mode - Configure API credentials in appsettings.json for production</span>
+            </div>
+        </div>
+
+        <div class="settings-card">
+            <div class="card-header">
+                <span class="icon">&#128259;</span>
+                <h4>Sync Settings</h4>
+            </div>
+            <div class="card-content">
+                <div class="form-group">
+                    <label>Sync Mode</label>
+                    <select disabled>
+                        <option>Manual Trigger</option>
+                        <option>Scheduled</option>
+                        <option>Real-time (Webhooks)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Sync Direction</label>
+                    <select disabled>
+                        <option>E-commerce to SAP</option>
+                        <option>SAP to E-commerce</option>
+                        <option>Bidirectional</option>
+                    </select>
+                </div>
+                <span class="hint">Sync settings can be configured via API</span>
+            </div>
+        </div>
+
+        <div class="settings-card">
+            <div class="card-header">
+                <span class="icon">&#128202;</span>
+                <h4>Database</h4>
+            </div>
+            <div class="card-content">
+                <div class="db-info">
+                    <span class="label">Provider:</span>
+                    <span class="value">SQL Server (In-Memory for Demo)</span>
+                </div>
+                <div class="db-info">
+                    <span class="label">Connection:</span>
+                    <span class="value">Configure in appsettings.json</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .settings-page {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .page-header h3 {
+        color: white;
+        font-size: 1.3rem;
+        margin-bottom: 4px;
+    }
+
+    .page-header p {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .settings-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 20px;
+    }
+
+    .settings-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 24px;
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .card-header .icon {
+        font-size: 1.4rem;
+    }
+
+    .card-header h4 {
+        color: white;
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+    .card-content {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-group label {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .form-group input, .form-group select {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 10px 12px;
+        color: white;
+        font-size: 0.9rem;
+    }
+
+    .form-group input:disabled, .form-group select:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .hint {
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 0.8rem;
+    }
+
+    .connection-status {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+
+    .status-dot.connected {
+        background: #2ed573;
+        box-shadow: 0 0 8px rgba(46, 213, 115, 0.6);
+    }
+
+    .platforms {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .platform-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 8px;
+    }
+
+    .platform-name {
+        color: white;
+    }
+
+    .platform-item .status {
+        font-size: 0.8rem;
+        padding: 4px 8px;
+        border-radius: 4px;
+    }
+
+    .platform-item .status.connected {
+        background: rgba(46, 213, 115, 0.2);
+        color: #2ed573;
+    }
+
+    .db-info {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .db-info .label {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .db-info .value {
+        color: white;
+    }
+</style>

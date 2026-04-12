@@ -1,0 +1,126 @@
+@page "/partners"
+@inject HttpClient Http
+
+<div class="partners-page">
+    <div class="page-header">
+        <div class="header-info">
+            <h3>Business Partners</h3>
+            <p>Synced customers from Shopify & Amazon</p>
+        </div>
+        <div class="search-box">
+            <input type="text" placeholder="Search partners..." @bind="searchTerm" @oninput="FilterPartners" />
+        </div>
+    </div>
+
+    <div class="partners-grid">
+        @foreach (var partner in filteredPartners)
+        {
+            <div class="partner-card">
+                <div class="partner-header">
+                    <div class="partner-avatar">
+                        @partner.CardName?.FirstOrDefault()
+                    </div>
+                    <div class="partner-info">
+                        <span class="partner-name">@partner.CardName</span>
+                        <span class="partner-code">@partner.CardCode</span>
+                    </div>
+                    <div class="partner-status @GetStatusClass(partner.SyncStatus)">
+                        @partner.SyncStatus
+                    </div>
+                </div>
+                <div class="partner-details">
+                    <div class="detail-row">
+                        <span class="label">Email:</span>
+                        <span class="value">@partner.Email</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Phone:</span>
+                        <span class="value">@partner.Phone1</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Source:</span>
+                        <span class="value source-badge">@partner.Source</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Last Sync:</span>
+                        <span class="value">@partner.LastSyncedAt?.ToString("g")</span>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!filteredPartners.Any())
+    {
+        <div class="empty-state">
+            <span class="icon">&#128101;</span>
+            <h3>No Business Partners</h3>
+            <p>Run a sync from the dashboard to import customers from Shopify/Amazon</p>
+        </div>
+    }
+</div>
+
+@code {
+    private List<BusinessPartnerDto> partners = new();
+    private List<BusinessPartnerDto> filteredPartners = new();
+    private string searchTerm = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPartners();
+    }
+
+    private async Task LoadPartners()
+    {
+        try
+        {
+            var result = await Http.GetFromJsonAsync<List<BusinessPartnerDto>>("api/businesspartners");
+            partners = result ?? new();
+            FilterPartners();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading partners: {ex.Message}");
+        }
+    }
+
+    private void FilterPartners()
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            filteredPartners = partners;
+        }
+        else
+        {
+            filteredPartners = partners.Where(p => 
+                (p.CardName?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (p.CardCode?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (p.Email?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false)
+            ).ToList();
+        }
+    }
+
+    private string GetStatusClass(string status)
+    {
+        return status?.ToLower() switch
+        {
+            "synced" => "success",
+            "failed" => "error",
+            "pending" => "pending",
+            "inprogress" => "pending",
+            _ => ""
+        };
+    }
+
+    public class BusinessPartnerDto
+    {
+        public int Id { get; set; }
+        public string CardCode { get; set; } = "";
+        public string CardName { get; set; } = "";
+        public string? Email { get; set; }
+        public string? Phone1 { get; set; }
+        public string Source { get; set; } = "";
+        public string SyncStatus { get; set; } = "";
+        public DateTime? LastSyncedAt { get; set; }
+    }
+}

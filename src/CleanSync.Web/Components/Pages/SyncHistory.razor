@@ -1,0 +1,89 @@
+@page "/sync"
+@inject HttpClient Http
+
+<div class="sync-history-page">
+    <div class="page-header">
+        <div class="header-info">
+            <h3>Sync History</h3>
+            <p>View all sync operations and their results</p>
+        </div>
+    </div>
+
+    <div class="history-table">
+        <div class="table-header">
+            <span>Date & Time</span>
+            <span>Type</span>
+            <span>Direction</span>
+            <span>Processed</span>
+            <span>Success</span>
+            <span>Failed</span>
+            <span>Status</span>
+        </div>
+        @foreach (var log in syncLogs)
+        {
+            <div class="table-row">
+                <span class="date">@log.StartedAt.ToString("g")</span>
+                <span class="type">@log.EntityType</span>
+                <span class="direction">@log.Direction</span>
+                <span class="processed">@log.EntityCount</span>
+                <span class="success">@log.SuccessCount</span>
+                <span class="failed">@log.FailureCount</span>
+                <span class="status @GetStatusClass(log.Status)">@log.Status</span>
+            </div>
+        }
+    </div>
+
+    @if (!syncLogs.Any())
+    {
+        <div class="empty-state">
+            <span class="icon">&#128196;</span>
+            <h3>No Sync History</h3>
+            <p>Sync history will appear here after you run your first sync</p>
+        </div>
+    }
+</div>
+
+@code {
+    private List<SyncLogDto> syncLogs = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadLogs();
+    }
+
+    private async Task LoadLogs()
+    {
+        try
+        {
+            var result = await Http.GetFromJsonAsync<List<SyncLogDto>>("api/businesspartners/sync-logs");
+            syncLogs = result ?? new();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading logs: {ex.Message}");
+        }
+    }
+
+    private string GetStatusClass(string status)
+    {
+        return status?.ToLower() switch
+        {
+            "synced" => "success",
+            "failed" => "error",
+            "inprogress" => "pending",
+            _ => ""
+        };
+    }
+
+    public class SyncLogDto
+    {
+        public int Id { get; set; }
+        public string EntityType { get; set; } = "";
+        public string Direction { get; set; } = "";
+        public int EntityCount { get; set; }
+        public int SuccessCount { get; set; }
+        public int FailureCount { get; set; }
+        public DateTime StartedAt { get; set; }
+        public string Status { get; set; } = "";
+    }
+}
