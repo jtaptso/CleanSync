@@ -1,4 +1,5 @@
 @inherits LayoutComponentBase
+@inject NavigationManager Navigation
 
 <div class="page">
     <div class="sidebar">
@@ -7,22 +8,22 @@
             <span class="badge badge-demo">Demo Mode</span>
         </div>
         <nav class="nav-menu">
-            <a href="/" class="nav-item active">
+            <NavLink href="/" class="nav-item" Match="NavLinkMatch.All">
                 <span class="icon">&#128200;</span>
                 Dashboard
-            </a>
-            <a href="/partners" class="nav-item">
+            </NavLink>
+            <NavLink href="/partners" class="nav-item">
                 <span class="icon">&#128101;</span>
                 Business Partners
-            </a>
-            <a href="/sync" class="nav-item">
+            </NavLink>
+            <NavLink href="/sync" class="nav-item">
                 <span class="icon">&#128259;</span>
                 Sync History
-            </a>
-            <a href="/settings" class="nav-item">
+            </NavLink>
+            <NavLink href="/settings" class="nav-item">
                 <span class="icon">&#9881;</span>
                 Settings
-            </a>
+            </NavLink>
         </nav>
         <div class="connection-status">
             <div class="status-item">
@@ -49,5 +50,12 @@
 </div>
 
 @code {
-    private string Title = "Dashboard";
+    private string Title => Navigation.ToBaseRelativePath(Navigation.Uri).Trim('/') switch
+    {
+        "" => "Dashboard",
+        "partners" => "Business Partners",
+        "sync" => "Sync History",
+        "settings" => "Settings",
+        _ => "CleanSync"
+    };
 }

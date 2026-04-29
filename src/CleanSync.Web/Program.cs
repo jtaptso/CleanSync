@@ -9,7 +9,7 @@ builder.Services.AddRazorComponents()
 // Add HttpClient for API calls
 builder.Services.AddHttpClient("API", client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5000");
+    client.BaseAddress = new Uri("http://localhost:5255");
 });
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("API"));
 

@@ -46,7 +46,7 @@
     padding: 20px 12px;
 }
 
-.nav-item {
+.nav-menu ::deep .nav-item {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -59,19 +59,19 @@
     font-weight: 500;
 }
 
-.nav-item:hover {
+.nav-menu ::deep .nav-item:hover {
     background: rgba(255, 255, 255, 0.1);
     color: white;
     transform: translateX(4px);
 }
 
-.nav-item.active {
+.nav-menu ::deep .nav-item.active {
     background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(123, 47, 247, 0.2));
     color: white;
     border-left: 3px solid #00d4ff;
 }
 
-.nav-item .icon {
+.nav-menu ::deep .nav-item .icon {
     font-size: 1.2rem;
 }
 

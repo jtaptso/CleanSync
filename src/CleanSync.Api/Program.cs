@@ -10,11 +10,16 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 // Configure Swagger with enhanced settings
 builder.Services.AddEndpointsApiExplorer();
@@ -132,5 +137,14 @@ app.MapHealthChecks("/health/live", new HealthCheckOptions
 {
     Predicate = _ => false
 });
+
+// Seed database with test data in demo/in-memory mode
+if (useInMemory || demoMode)
+{
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<CleanSyncDbContext>();
+    var seederLogger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    await DatabaseSeeder.SeedAsync(dbContext, seederLogger);
+}
 
 app.Run();
